@@ -1,0 +1,131 @@
+const formData = {
+  image: '',
+  location: '',
+  phone: '',
+}
+
+function geoFindMe() {
+  const status = document.querySelector("#status");
+  const mapLink = document.querySelector("#map-link");
+
+  mapLink.href = "";
+  mapLink.textContent = "";
+
+  function success(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    status.textContent = "";
+    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+    formData.location = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+  }
+
+  function error() {
+    status.textContent = "Unable to retrieve your location";
+  }
+
+  if (!navigator.geolocation) {
+    status.textContent = "Geolocation is not supported by your browser";
+  } else {
+    status.textContent = "Locating…";
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+}
+
+const width = 320; // We will scale the photo width to this
+let height = 0; // This will be computed based on the input stream
+
+let streaming = false;
+
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const photo = document.getElementById("photo");
+const startButton = document.getElementById("start-button");
+const allowButton = document.getElementById("permissions-button");
+
+allowButton.addEventListener("click", () => {
+    try{
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: false })
+        //   .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
+          .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+          })
+          .catch((err) => {
+            console.error(`An error occurred: ${err}`);
+          });
+    } catch (e) {
+        alert(e);
+    }
+});
+
+video.addEventListener("canplay", (ev) => {
+  if (!streaming) {
+    height = video.videoHeight / (video.videoWidth / width);
+
+    video.setAttribute("width", width);
+    video.setAttribute("height", height);
+    canvas.setAttribute("width", width);
+    canvas.setAttribute("height", height);
+    streaming = true;
+  }
+});
+
+startButton.addEventListener("click", (ev) => {
+  takePicture();
+  ev.preventDefault();
+});
+
+function clearPhoto() {
+  const context = canvas.getContext("2d");
+  context.fillStyle = "#aaaaaa";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  const data = canvas.toDataURL("image/png");
+  photo.setAttribute("src", data);
+}
+
+clearPhoto();
+
+function takePicture() {
+  const context = canvas.getContext("2d");
+  if (width && height) {
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(video, 0, 0, width, height);
+
+    const data = canvas.toDataURL("image/png");
+    photo.setAttribute("src", data);
+    console.log(data);
+    formData.image = data;
+  } else {
+    clearPhoto();
+  }
+}
+
+
+// Create a single supabase client for interacting with your database
+const supabase =  window.supabase.createClient('https://almrozbianjnzhdfqvyr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbXJvemJpYW5qbnpoZGZxdnlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MDY2NDgsImV4cCI6MjA3ODE4MjY0OH0.KT5RZSUASTRIsIro7WADcWVNGH0thLmZj3wNADF16y4')
+
+async function addEntry() {
+  const { error } = await supabase
+    .from('countries')
+    .insert({ id: 1, name: 'Mordor' })
+  
+  console.log('ERROR:', error)
+}
+
+async function saveData() {
+  const { error } = await supabase
+    .from('found')
+    .insert(formData)
+  
+  console.log('ERROR:', error)
+}
+
+document.getElementById("form").addEventListener("submit", function(e) {
+  e.preventDefault(); // evita el envío automático
+  saveData();
+});

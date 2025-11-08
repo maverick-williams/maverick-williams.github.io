@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <div class="p-8">
+        <h1 class="text-3xl font-bold text-center mb-8">
+          Ingresa los datos
+        </h1>
+        <form class="flex flex-col gap-4" id="form">
+            <div>
+                <div class="camera">
+                    <video id="video">Video stream not available.</video>
+                    <button type="button" id="start-button">Capture photo</button>
+                </div>
+                <canvas id="canvas"></canvas>
+                <div class="output">
+                    <img id="photo" src="" alt="The screen capture will appear in this box." />
+                </div>
+                <button type="button" id="permissions-button">Allow Camera</button>
+                <button type="button" class="bg-red-400 p-2 text-white rounded-md block">Tomar foto</button>
+            </div>
+            <div>
+                <label for="phone" class="font-bold text-gray-700">Numero de celular</label>
+                <input id="phone" type="phone" class="bg-gray-200 py-1 px-2 rounded-md"  placeholder="+569 12345678" required>
+            </div>
+            <div>
+                <button
+                    type="button"
+                    onclick="geoFindMe()"
+                    class="bg-red-400 p-2 text-white rounded-md block"
+                >Ubicacion</button>
+                <p id="status"></p>
+                <a id="map-link" href="" target="_blank">Location unknown</a>
+            </div>
+            <button
+                type="submit"
+                class="font-bold bg-green-400 p-2 text-white rounded-md block disabled:bg-gray-300"
+            >Enviar</button>
+        </form>
+        <button onclick="addEntry()">Agregar</button>
+    </div>
+    <script src="../scripts/picture.js"></script>
+  </body>
+</html>
