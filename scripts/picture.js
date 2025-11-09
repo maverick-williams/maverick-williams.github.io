@@ -122,6 +122,8 @@ async function addEntry() {
 }
 
 async function saveData() {
+  const phone = document.getElementById('phone')
+  formData.phone = phone.value;
   const { error } = await supabase
     .from('found')
     .insert(formData)
