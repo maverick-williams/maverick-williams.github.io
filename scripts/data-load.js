@@ -22,9 +22,11 @@ const phone = document.getElementById('phone');
       });
   });
 
+const urlParams = new URLSearchParams(window.location.search);
+const nfc = urlParams.get('nfc');
 
 const supabase =  window.supabase.createClient('https://almrozbianjnzhdfqvyr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbXJvemJpYW5qbnpoZGZxdnlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MDY2NDgsImV4cCI6MjA3ODE4MjY0OH0.KT5RZSUASTRIsIro7WADcWVNGH0thLmZj3wNADF16y4')
-supabase.from('found').select().then(response => displayData(response.data[0]))
+supabase.from('found').select() .order('created_at', { ascending: false }).eq('NFC', nfc).then(response => displayData(response.data[0]))
 
 function displayData(data) {
     image.src = data.image;

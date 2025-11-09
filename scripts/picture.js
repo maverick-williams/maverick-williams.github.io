@@ -2,7 +2,11 @@ const formData = {
   image: '',
   location: '',
   phone: '',
+  NFC: '',
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+formData.NFC = urlParams.get('nfc');
 
 function geoFindMe() {
   const status = document.querySelector("#status");
@@ -47,8 +51,8 @@ const allowButton = document.getElementById("permissions-button");
 allowButton.addEventListener("click", () => {
     try{
         navigator.mediaDevices
-          .getUserMedia({ video: true, audio: false })
-        //   .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
+          // .getUserMedia({ video: true, audio: false })
+          .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
           .then((stream) => {
             video.srcObject = stream;
             video.play();
