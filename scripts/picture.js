@@ -127,6 +127,11 @@ async function saveData() {
     .insert(formData)
   
   console.log('ERROR:', error)
+  if (error === null) {
+    alert('Guardado con exito')
+  } else {
+    alert(error)
+  }
 }
 
 document.getElementById("form").addEventListener("submit", function(e) {
