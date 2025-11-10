@@ -21,7 +21,7 @@ const nfcData = {
     navigator.clipboard.writeText(texto)
       .then(() => {
         console.log("Texto copiado al portapapeles:", texto);
-        alert("Numero de telefono copiado ✅");
+        alert("Número de teléfono copiado ✅");
       })
       .catch(err => {
         console.error("Error al copiar:", err);
@@ -33,7 +33,7 @@ document.getElementById("copyLocation").addEventListener("click", () => {
     navigator.clipboard.writeText(texto)
       .then(() => {
         console.log("Texto copiado al portapapeles:", texto);
-        alert("Ubicacion copiada ✅");
+        alert("Ubicación copiada ✅");
       })
       .catch(err => {
         console.error("Error al copiar:", err);

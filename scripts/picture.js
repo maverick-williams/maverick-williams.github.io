@@ -47,7 +47,7 @@ function geoFindMe() {
 
     status.textContent = "";
     mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+    mapLink.textContent = `Latitud: ${latitude} °, Longitud: ${longitude} °`;
     formData.location = `${latitude} ${longitude}`;
     loadingButton.hidden = true;
     geoAgainButton.hidden = false;
@@ -55,7 +55,7 @@ function geoFindMe() {
 
   function error() {
     // status.textContent = "Unable to retrieve your location";
-    mapLink.textContent = "No se pudo obtener la ubicacion";
+    mapLink.textContent = "No se pudo obtener la ubicación";
     loadingButton.hidden = true;
     locationButton.hidden = false;    
   }
@@ -73,8 +73,8 @@ function geoFindMe() {
 function initStreaming() {
   try{
         navigator.mediaDevices
-          .getUserMedia({ video: true, audio: false })
-          // .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
+          // .getUserMedia({ video: true, audio: false })
+          .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
           .then((stream) => {
             video.srcObject = stream;
             video.play();
@@ -156,7 +156,7 @@ async function saveData() {
   
   console.log('ERROR:', error)
   if (error === null) {
-    alert('Guardado con exito')
+    alert('Guardado con éxito')
   } else {
     alert(error)
   }
