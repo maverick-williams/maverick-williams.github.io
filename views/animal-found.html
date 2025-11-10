@@ -5,17 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../styles/shared.css">
   </head>
-  <body>
-    <div class="p-8">
-        <h1 class="text-3xl font-bold text-center mb-8">
+  <body class="zain-regular">
+    <div class="p-8 flex flex-col gap-4">
+        <h1 class="text-3xl font-bold text-center mb-8 zain-bold">
           Animal encontrado
         </h1>
-        <img src="" id="image">
-        <p>Ubicacion: <span id="location">Latitud: , Longitud</span></p>
-        <p>Numero de telefono: <span id="phone">+569 12345678</span></p>
-        <button id="copyButton" class="bg-green-400 py-1 px-2 rounded-md font-bold">Copiar numero de telefono</button>
+        <img src="" id="image"
+          class="w-full top-0 rounded-lg"
+        >
+        <div>
+          <h2 class="text-xl font-bold text-gray-700">Ubicacion</h2>
+          <p id="location">Latitud: , Longitud</p>
+          <button
+            id="copyLocation"
+            class="flex w-full gap-2 items-center justify-center px-4 py-2 my-2 rounded-lg bg-custom-light-yellow border-yellow-500 border-1"
+          >
+            <i data-lucide="copy"></i>
+            Copiar ubicacion
+          </button>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-700">Numero de telefono</h2>
+          <p id="phone"></p>
+          <button
+            id="copyButton"
+            class="flex w-full gap-2 items-center justify-center px-4 py-2 my-2 rounded-lg bg-custom-light-yellow border-yellow-500 border-1"
+          >
+            <i data-lucide="copy"></i>
+            Copiar numero de telefono
+          </button>
+        </div>
     </div>
     <script src="../scripts/data-load.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
   </body>
 </html>

@@ -5,37 +5,10 @@ const formData = {
   NFC: '',
 }
 
+let photoTaken = false;
+
 const urlParams = new URLSearchParams(window.location.search);
 formData.NFC = urlParams.get('nfc');
-
-function geoFindMe() {
-  const status = document.querySelector("#status");
-  const mapLink = document.querySelector("#map-link");
-
-  mapLink.href = "";
-  mapLink.textContent = "";
-
-  function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    status.textContent = "";
-    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
-    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
-    formData.location = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
-  }
-
-  function error() {
-    status.textContent = "Unable to retrieve your location";
-  }
-
-  if (!navigator.geolocation) {
-    status.textContent = "Geolocation is not supported by your browser";
-  } else {
-    status.textContent = "Locating…";
-    navigator.geolocation.getCurrentPosition(success, error);
-  }
-}
 
 const width = 320; // We will scale the photo width to this
 let height = 0; // This will be computed based on the input stream
@@ -46,13 +19,62 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const photo = document.getElementById("photo");
 const startButton = document.getElementById("start-button");
-const allowButton = document.getElementById("permissions-button");
+const newPhotoButton = document.getElementById("newPhoto");
+const loadingButton = document.getElementById('loading-button');
+const locationButton = document.getElementById('locationButton');
+const geoAgainButton = document.getElementById('geo-again');
+const submitButton = document.getElementById('submitButton');
 
-allowButton.addEventListener("click", () => {
-    try{
+// fetch('../exampleImage.txt')
+// .then(response => response.text())
+// .then(data => {
+//   photo.src = data;
+//   photo.hidden = false;
+// })
+
+
+function geoFindMe() {
+  const status = document.querySelector("#status");
+  const mapLink = document.querySelector("#map-link");
+  geoAgainButton.hidden = true;
+
+  // mapLink.href = "";
+  // mapLink.textContent = "";
+
+  function success(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    status.textContent = "";
+    mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+    mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+    formData.location = `${latitude} ${longitude}`;
+    loadingButton.hidden = true;
+    geoAgainButton.hidden = false;
+  }
+
+  function error() {
+    // status.textContent = "Unable to retrieve your location";
+    mapLink.textContent = "No se pudo obtener la ubicacion";
+    loadingButton.hidden = true;
+    locationButton.hidden = false;    
+  }
+
+  if (!navigator.geolocation) {
+    status.textContent = "Geolocation is not supported by your browser";
+  } else {
+    // status.textContent = "Locating…";
+    loadingButton.hidden = false;
+    locationButton.hidden = true;
+    navigator.geolocation.getCurrentPosition(success, error);
+  }
+}
+
+function initStreaming() {
+  try{
         navigator.mediaDevices
-          // .getUserMedia({ video: true, audio: false })
-          .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
+          .getUserMedia({ video: true, audio: false })
+          // .getUserMedia({ video: { facingMode: { exact: "environment" } }, audio: false })
           .then((stream) => {
             video.srcObject = stream;
             video.play();
@@ -63,16 +85,12 @@ allowButton.addEventListener("click", () => {
     } catch (e) {
         alert(e);
     }
-});
+}
+
+initStreaming();
 
 video.addEventListener("canplay", (ev) => {
   if (!streaming) {
-    height = video.videoHeight / (video.videoWidth / width);
-
-    video.setAttribute("width", width);
-    video.setAttribute("height", height);
-    canvas.setAttribute("width", width);
-    canvas.setAttribute("height", height);
     streaming = true;
   }
 });
@@ -88,42 +106,50 @@ function clearPhoto() {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   const data = canvas.toDataURL("image/png");
-  photo.setAttribute("src", data);
 }
 
 clearPhoto();
 
 function takePicture() {
-  const context = canvas.getContext("2d");
-  if (width && height) {
-    canvas.width = width;
-    canvas.height = height;
-    context.drawImage(video, 0, 0, width, height);
+  try {
+    const context = canvas.getContext("2d");
+    const size = Math.min(video.videoWidth, video.videoHeight);
+    canvas.width = size;
+    canvas.height = size;
+      // Calculamos el recorte centrado para mantener la proporción cuadrada
+    const sx = (video.videoWidth - size) / 2;
+    const sy = (video.videoHeight - size) / 2;
+    context.drawImage(video, sx, sy, size, size, 0, 0, size, size);
 
     const data = canvas.toDataURL("image/png");
-    photo.setAttribute("src", data);
-    console.log(data);
     formData.image = data;
-  } else {
-    clearPhoto();
+    photo.src = data;
+    photo.hidden = false;
+    photoTaken = true;
+    newPhotoButton.hidden = false;
+    startButton.hidden = true;
+  } catch(error) {
+    alert(error)
   }
 }
 
+function resetPhoto() {
+  photoTaken = false;
+  photo.src = '';
+  photo.hidden = true;
+  formData.image = '';
+  newPhotoButton.hidden = true;
+  startButton.hidden = false;
+}
 
 // Create a single supabase client for interacting with your database
 const supabase =  window.supabase.createClient('https://almrozbianjnzhdfqvyr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbXJvemJpYW5qbnpoZGZxdnlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MDY2NDgsImV4cCI6MjA3ODE4MjY0OH0.KT5RZSUASTRIsIro7WADcWVNGH0thLmZj3wNADF16y4')
 
-async function addEntry() {
-  const { error } = await supabase
-    .from('countries')
-    .insert({ id: 1, name: 'Mordor' })
-  
-  console.log('ERROR:', error)
-}
-
 async function saveData() {
+  submitButton.disabled = true;
+  submitButton.textContent = 'Enviando...'
   const phone = document.getElementById('phone')
-  formData.phone = phone.value;
+  formData.phone = `+569${phone.value}`;
   const { error } = await supabase
     .from('found')
     .insert(formData)
@@ -134,6 +160,8 @@ async function saveData() {
   } else {
     alert(error)
   }
+  submitButton.disabled = false;
+  submitButton.textContent = 'Enviar'
 }
 
 document.getElementById("form").addEventListener("submit", function(e) {

@@ -5,45 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../styles/shared.css">
   </head>
-  <body>
+  <body class="zain-regular">
     <div class="p-8">
-        <h1 class="text-3xl font-bold text-center mb-8">
+        <h1 class="text-3xl font-bold mb-8 zain-bold">
           Ingresa los datos
         </h1>
-        <form class="flex flex-col gap-4" id="form">
+        <form class="flex flex-col gap-8" id="form">
             <div>
-                <div class="camera">
-                    <video id="video">Video stream not available.</video>
-                    <button type="button" id="start-button">Capture photo</button>
+                <div class="camera aspect-square relative rounded-lg overflow-hidden">
+                    <video id="video" class="w-full h-full object-cover">Video stream not available.</video>
+                    <img src="" class="w-full h-full absolute top-0 border-green-400 border-6 rounded-lg" id="photo" hidden>
                 </div>
-                <canvas id="canvas"></canvas>
-                <div class="output">
-                    <img id="photo" src="" alt="The screen capture will appear in this box." />
-                </div>
-                <button type="button" id="permissions-button">Allow Camera</button>
-                <button type="button" class="bg-red-400 p-2 text-white rounded-md block">Tomar foto</button>
-            </div>
-            <div>
-                <label for="phone" class="font-bold text-gray-700">Numero de celular</label>
-                <input id="phone" type="phone" class="bg-gray-200 py-1 px-2 rounded-md"  placeholder="+569 12345678" required>
-            </div>
-            <div>
                 <button
                     type="button"
+                    id="start-button"
+                    class="flex gap-2 w-full justify-center items-center px-4 py-2 my-2 font-bold rounded-lg bg-custom-light-yellow border-yellow-500 border-1"
+                >
+                    <i data-lucide="focus" id="icon"></i>
+                    <span id="text">Tomar foto</span>
+                </button>
+                <button
+                    id="newPhoto"
+                    hidden
+                    type="button"
+                    onclick="resetPhoto()"
+                    class="flex w-full gap-2 items-center justify-center px-4 py-2 my-2 font-bold rounded-lg bg-custom-light-yellow border-yellow-500 border-1"
+                >
+                    <i data-lucide="rotate-ccw"></i>
+                    <span>Volver a tomar foto</span>
+                </button>
+                <canvas id="canvas" class="aspect-square w-full absolute hidden"></canvas>
+            </div>
+            <div>
+                <label for="phone" class="text-xl font-bold text-gray-700">Numero de celular</label>
+                <div class="bg-custom-light-yellow flex gap-4 rounded-lg border-1 overflow-hidden border-yellow-500">
+                    <div class="py-4 pl-4 flex gap-4">
+                        <i data-lucide="phone"></i>
+                        <p>+569</p>
+                    </div>
+                    <input
+                        id="phone"
+                        class="bg-white flex-1 pl-4"
+                        type="phone"
+                        placeholder="12345678" required>
+                </div>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-gray-700">Ubicacion</h2>
+                <p id="map-link">Ubicacion desconocida</p>
+                <button
+                    type="button"
+                    id="locationButton"
                     onclick="geoFindMe()"
-                    class="bg-red-400 p-2 text-white rounded-md block"
-                >Ubicacion</button>
+                    class="bg-red-400 p-2 rounded-lg block flex gap-2 w-full justify-center bg-custom-light-yellow border-yellow-500 border-1" 
+                >
+                    <i data-lucide="map-pin"></i>
+                    Obtener ubicacion
+                </button>
+                <button
+                    type="button"
+                    disabled
+                    hidden
+                    id="loading-button"
+                    class="p-2 rounded-lg block flex gap-2 w-full justify-center text-gray-400 bg-gray-200 border-gray-400 border-1" 
+                >
+                    <i data-lucide="loader-circle"></i>
+                    Obteniendo ubicacion...
+                </button>
+                <button
+                    type="button"
+                    id="geo-again"
+                    hidden
+                    onclick="geoFindMe()"
+                    class="bg-red-400 p-2 rounded-lg block flex gap-2 w-full justify-center bg-custom-light-yellow border-yellow-500 border-1" 
+                >
+                    <i data-lucide="rotate-ccw"></i>
+                    Volver a obtener ubicacion
+                </button>
                 <p id="status"></p>
-                <a id="map-link" href="" target="_blank">Location unknown</a>
             </div>
             <button
+                id="submitButton"
                 type="submit"
                 class="font-bold bg-green-400 p-2 text-white rounded-md block disabled:bg-gray-300"
             >Enviar</button>
         </form>
-        <button onclick="addEntry()">Agregar</button>
     </div>
     <script src="../scripts/picture.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
   </body>
 </html>
